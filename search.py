@@ -1,3 +1,4 @@
+from treeNode import node
 # This can be the main file that will run. Here is where we can
 # do the file reading, and according to user input, search using
 # the specified search algorithm.
@@ -31,17 +32,46 @@ def search(map: list, algorithm: str):
     # number of nodes and the runtime.
 
     pass
-    
+   
+
+## Read file and store map into 2D array 
+def readFromFile(fileName) -> tuple:
+    array2D = []
+    dimensions = []
+    startNode = node()
+    goalNode = node()
+   
+   # first line: dimensions
+    with open(fileName, 'r') as f:
+        firstLine = f.readline()
+        dimensions = firstLine.split()
+        secondLine = f.readline()
+        startNode.setCoordinates(secondLine)
+        thirdLine = f.readline()
+        goalNode.setCoordinates(thirdLine)
+        for i, line in enumerate(f):
+            strLine = line.split(' ')
+            intLine = [eval(i) for i in strLine]
+            array2D.append(intLine)
+
+    return (array2D, dimensions, startNode, goalNode)
+
+
 # the main method, starting point       
 def main():
     # for now we can take user input from the command line
     # later on we can modify for when we create the executable
     fileName = input("Input name of file:")
-    algrithm = input("Input name of search algorithm:")
-    # TODO: read file (can be here or in a method)
-    
+    # algorithm = input("Input name of search algorithm:")
+    readFromFile(fileName)
     # and then we can call the search method by passing in the 2D array
     # search(map, algorithm)
+    
+    # Write a method to generate successor nodes(this should be the same 
+    # for all three searches!)
+    # Write BFS - follow the pseudocode as closely as possible.
+    # Add a “closed” list to check for repeated states
+    # Test this first!
     
 if __name__ == "__main__":
     main()
