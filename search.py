@@ -1,3 +1,4 @@
+from treeNode import node
 # This can be the main file that will run. Here is where we can
 # do the file reading, and according to user input, search using
 # the specified search algorithm.
@@ -34,26 +35,26 @@ def search(map: list, algorithm: str):
    
 
 ## Read file and store map into 2D array 
-def readFromFile(fileName):
-   array2D = []
-   lines = []
-   # lines to read
-   line_numbers = [0, 1, 2]
+def readFromFile(fileName) -> tuple:
+    array2D = []
+    dimensions = []
+    startNode = node()
+    goalNode = node()
+   
+   # first line: dimensions
+    with open(fileName, 'r') as f:
+        firstLine = f.readline()
+        dimensions = firstLine.split()
+        secondLine = f.readline()
+        startNode.setCoordinates(secondLine)
+        thirdLine = f.readline()
+        goalNode.setCoordinates(thirdLine)
+        for i, line in enumerate(f):
+            strLine = line.split(' ')
+            intLine = [eval(i) for i in strLine]
+            array2D.append(intLine)
 
-   ## Store 2nd & 3rd line in node class 
-   ## Store entire map into 2D array and print 
-   with open(fileName, 'r') as f:
-        for i,line in enumerate(f):
-            array2D.append(line.split(' '))
-            ##only select 1st 3 lines 
-            if i in line_numbers:
-                lines.append(line.strip())
-
-   for i in range(len(array2D)):
-        
-        print(array2D[i])
-
-   print("dimensions, source, and goal: ", lines)
+    return (array2D, dimensions, startNode, goalNode)
 
 
 # the main method, starting point       
@@ -61,11 +62,16 @@ def main():
     # for now we can take user input from the command line
     # later on we can modify for when we create the executable
     fileName = input("Input name of file:")
-    ##algorithm = input("Input name of search algorithm:")
-    # TODO: read file (can be here or in a method)
+    # algorithm = input("Input name of search algorithm:")
     readFromFile(fileName)
     # and then we can call the search method by passing in the 2D array
     # search(map, algorithm)
+    
+    # Write a method to generate successor nodes(this should be the same 
+    # for all three searches!)
+    # Write BFS - follow the pseudocode as closely as possible.
+    # Add a “closed” list to check for repeated states
+    # Test this first!
     
 if __name__ == "__main__":
     main()
