@@ -2,18 +2,25 @@
 # use the same node class for all three searches)
 
 class node:
-    coordinates: list # represents the coordinates of the current node
+    coordinates: list[int] # represents the coordinates of the current node
     cost: int = 0 # represents the cost of this node
-    successorNodes: list # stores all successor nodes
+    # the following are the successor nodes, if any, that will be generated
     left = None
     right = None
     up = None
     down = None
     
-    def setCoordinates(self, coordinates):
+    def __init__(self, coordinates: list[int] = None, cost: int = 0) -> None:
+        self.coordinates = coordinates
+        self.cost = cost
+        
+    def __str__(self):
+        return "Cost: " + str(self.cost) + "\nCoordinates: " + str(self.coordinates)
+    
+    def setCoordinates(self, coordinates: list):
         self.coordinates = coordinates
       
-    def setCost(self, cost):
+    def setCost(self, cost: int):
         self.cost = cost
         
     def setLeft(self, left):
@@ -28,38 +35,25 @@ class node:
     def setDown(self, down):
         self.down = down
     
-    def __str__(self):
-        return "Cost: " + str(self.cost) + "\nCoordinates: " + str(self.coordinates)
-    # we can add more attributes/methods along the way
-    
-    def generate_successor_nodes(self, map):
+    def generateSuccessorNodes(self, map: list):
         # start at self coordinates
-        x = self.coordinates[0] # start here
+        x = self.coordinates[0]
         y = self.coordinates[1]
         
-        # left is -1 on y coordinate
-        checkLeft = map[x][y-1] # if statement here
-        # if can't go to left: nothing
-        # if you can
-        left = node()
-        left.setCoordinates([x, y-1])
-        left.setCost(map[x][y-1])
-        self.setLeft(left)
-        # up is -1 on x coordinate
-        # down is +1 on x
-        # right is +1 on y
-        # if possible, generate child node
-        
-        # else don't
+        # check left (-1 on y coordinate)
+        if y != 0:
+            # generate left successor node
+            self.left = node([x, y-1], map[x][y-1])
+        # check right (+1 on y coordinate)
+        if y != len(map[x])-1:
+            # generate right successor node
+            self.right = node([x, y+1], map[x][y+1])
+        # check up (-1 on x coordinate)
+        if x != 0:
+            # generate up successor node
+            self.up = node([x-1, y], map[x-1][y])
+        # check down (+1 on x coordinate)
+        if x != len(map)-1:
+            # generate down successor node
+            self.down = node([x+1, y], map[x+1][y])
     
-[2, 4, 2, 1, 4, 5, 2]
-[0, 1, 2, 3, 5, 3, 1]
-[2, 0, 4, 4, 1, 2, 4]
-[2, 5, 5, 3, 2, 0, 1]
-[4, 3, 3, 2, 1, 0, 1]
-# pseudocode:
-# successor_nodes(map, parentNode):
-#   get coordinates from parent
-#   check to see (using map) if you can move up, down, right, left
-#   if you can, generate successor node
-#   return successor nodes

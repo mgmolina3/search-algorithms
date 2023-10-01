@@ -13,6 +13,10 @@ from treeNode import node
 # java –jar myProgram.jar map1.txt IDS
 
 def search(map: list, algorithm: str):
+    if algorithm.lower() == "bfs":
+        print("Will perform bfs search") # leaving this here for now
+        # perform bfs search
+        # bfs(map, startNode) - or whatever parameters we need to pass in
     # TODO
     # This method can take care of calling whatever search algorithm was
     # specified. Then we will need to take care of returning the following:
@@ -30,48 +34,49 @@ def search(map: list, algorithm: str):
     # If the algorithm terminates without finding a result, print -1 for the
     # path cost and NULL for the path sequence. You should still print the 
     # number of nodes and the runtime.
-
-    pass
    
 
-## Read file and store map into 2D array 
-def readFromFile(fileName) -> tuple:
-    array2D = []
+# Read file and store map into 2D array 
+def readFromFile(fileName: str) -> (list, list, node, node):
+    map = []
     dimensions = []
     startNode = node()
     goalNode = node()
    
-   # first line: dimensions
+   # reading the file
     with open(fileName, 'r') as f:
-        firstLine = f.readline()
-        dimensions = firstLine.split()
-        secondLine = f.readline()
-        startNode.setCoordinates(secondLine)
-        thirdLine = f.readline()
-        goalNode.setCoordinates(thirdLine)
-        for i, line in enumerate(f):
+        dimensions = [int(x) for x in f.readline().split()] # first line
+        startNode.setCoordinates([int(x) for x in f.readline().split()]) # second line
+        
+        goalNodeCoordinates = [int(x) for x in f.readline().split()] # third line
+        goalNode.setCoordinates(goalNodeCoordinates)
+        
+        # reading through all the map coordinates and savind as a 2D list
+        for _, line in enumerate(f):
             strLine = line.split(' ')
             intLine = [eval(i) for i in strLine]
-            array2D.append(intLine)
+            map.append(intLine)
 
-    return (array2D, dimensions, startNode, goalNode)
-
+        goalNode.setCost(map[goalNodeCoordinates[0]][goalNodeCoordinates[1]])
+        
+    return (map, dimensions, startNode, goalNode)
 
 # the main method, starting point       
 def main():
     # for now we can take user input from the command line
     # later on we can modify for when we create the executable
-    fileName = input("Input name of file:")
-    # algorithm = input("Input name of search algorithm:")
-    readFromFile(fileName)
+    fileName = input("Input name of file: ")
+    # algorithm = input("Input name of search algorithm: ")
+    map, dimensions, startNode, goalNode = readFromFile(fileName)
+    startNode.generateSuccessorNodes(map) # testing purposes for now, remove later
+    
     # and then we can call the search method by passing in the 2D array
     # search(map, algorithm)
     
     # Write a method to generate successor nodes(this should be the same 
-    # for all three searches!)
+    # for all three searches!) - DONE
     # Write BFS - follow the pseudocode as closely as possible.
     # Add a “closed” list to check for repeated states
-    # Test this first!
     
 if __name__ == "__main__":
     main()
