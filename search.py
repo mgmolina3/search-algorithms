@@ -1,4 +1,5 @@
 from treeNode import node
+from bfs import bfs 
 # This can be the main file that will run. Here is where we can
 # do the file reading, and according to user input, search using
 # the specified search algorithm.
@@ -12,9 +13,14 @@ from treeNode import node
 # similar to (for Java):
 # java –jar myProgram.jar map1.txt IDS
 
-def search(map: list, algorithm: str):
+def search(map: list, algorithm: str, startNode: node, goalNode: node):
     if algorithm.lower() == "bfs":
-        print("Will perform bfs search") # leaving this here for now
+        visited, path, totalCost, depth = bfs(startNode, goalNode, map)
+        # print(visited)
+        print(path)
+        print(totalCost)
+        # print("Depth: ", depth)
+        # leaving this here for now
         # perform bfs search
         # bfs(map, startNode) - or whatever parameters we need to pass in
     # TODO
@@ -67,11 +73,10 @@ def main():
     # later on we can modify for when we create the executable
     fileName = input("Input name of file: ")
     # algorithm = input("Input name of search algorithm: ")
-    map, dimensions, startNode, goalNode = readFromFile(fileName)
-    startNode.generateSuccessorNodes(map) # testing purposes for now, remove later
+    map, dimensions, startNode, goalNode = readFromFile(fileName)    
     
     # and then we can call the search method by passing in the 2D array
-    # search(map, algorithm)
+    search(map, "bfs", startNode, goalNode)
     
     # Write a method to generate successor nodes(this should be the same 
     # for all three searches!) - DONE
