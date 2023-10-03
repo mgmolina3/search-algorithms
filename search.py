@@ -15,14 +15,13 @@ from bfs import bfs
 
 def search(map: list, algorithm: str, startNode: node, goalNode: node):
     if algorithm.lower() == "bfs":
-        visited, path, totalCost, depth = bfs(startNode, goalNode, map)
-        # print(visited)
-        print(path)
-        print(totalCost)
-        # print("Depth: ", depth)
-        # leaving this here for now
-        # perform bfs search
-        # bfs(map, startNode) - or whatever parameters we need to pass in
+        visited, path, totalCost, depth, numExpandedNodes = bfs(startNode, goalNode, map)
+        print("Visited Nodes: ", visited)
+        print("Path to Goal: ", path)
+        print("Total Cost: ", totalCost)
+        print("Depth: ", depth)
+        print("Number of Expanded Nodes: ", numExpandedNodes)
+
     # TODO
     # This method can take care of calling whatever search algorithm was
     # specified. Then we will need to take care of returning the following:
