@@ -1,10 +1,7 @@
-# Write a node class (stores coordinates and all necessary helper data;
-# use the same node class for all three searches)
-
 class node:
     coordinates: list[int] # represents the coordinates of the current node
     cost: int = 0 # represents the cost of this node
-    parent = None # parent node
+    parent = None # parent node of this node
     # the following are the successor nodes, if any, that will be generated
     left = None
     right = None
