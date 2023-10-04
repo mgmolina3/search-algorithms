@@ -15,7 +15,7 @@ def search(map: list, algorithm: str, startNode: node, goalNode: node):
         print("Total Cost: ", totalCost)
         print("Depth: ", depth)
         print("Number of Expanded Nodes: ", numExpandedNodes)
-        print("Total time elapsed: ", endTime)
+        print("Total time elapsed: ", endTime, "seconds")
 
 # Read file and store map into 2D array 
 def readFromFile(fileName: str) -> (list, list, node, node):
