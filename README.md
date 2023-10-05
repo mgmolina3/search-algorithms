@@ -10,9 +10,9 @@ To clone this repo, run `git clone https://github.com/mgmolina3/search-algorithm
 
 In the project directory, you can run:
 
-### For Windows: `start search.exe map.txt bfs`
+### For Windows: `python3 search.py <name of text file>.txt bfs`
 
-### For Mac: `./search map.txt bfs`
+### For Mac: `./search <name of text file>.txt bfs`
 
 ## Features
 
