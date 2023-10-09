@@ -55,4 +55,12 @@ class node:
         if x != len(map)-1:
             # generate down successor node
             self.down = node([x+1, y], map[x+1][y], self)
-    
+
+##set priority node for A* search 
+class NodeWithPriority: 
+    def __init__(self, node, priority): 
+        self.node = node
+        self.priority = priority 
+
+    def __lt__(self, other): 
+        return self.priority < other.priority

@@ -1,7 +1,7 @@
 from treeNode import node
 import time
 
-# breath-first search algorithm
+# breadth-first search algorithm
 def bfs(root: node, goalNode: node, map: list, start_time: time):
     if root is None:
         return
