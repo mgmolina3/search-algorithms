@@ -17,10 +17,11 @@ def search(map: list, algorithm: str, startNode: node, goalNode: node):
         print("Depth: ", depth)
         print("Number of Expanded Nodes: ", numExpandedNodes)
         print("Total time elapsed: ", endTime, "seconds")
+    elif algorithm.lower() == "a-star":
+        path, cost = astar_search(startNode, goalNode, map)
+        print("Path to Goal: ", path)
+        print("Total Cost: ", cost)
     
-    if algorithm.lower() == "astar":
-        print("A* search: ", astar_search(startNode, goalNode, map))
-
 # Read file and store map into 2D array 
 def readFromFile(fileName: str) -> (list, list, node, node):
     map = []
@@ -50,10 +51,14 @@ def readFromFile(fileName: str) -> (list, list, node, node):
 def main():
     fileName = sys.argv[1]
     searchAlgorithm = sys.argv[2]
-    map, dimensions, startNode, goalNode = readFromFile(fileName)   
+    map, dimensions, startNode, goalNode = readFromFile(fileName)  
     
     # call the search method by passing in the map
     search(map, searchAlgorithm, startNode, goalNode)
     
+
+def myFunc(n):
+    return n.evalFunc
+
 if __name__ == "__main__":
     main()
