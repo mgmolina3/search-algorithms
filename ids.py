@@ -1,30 +1,44 @@
 from treeNode import node
 import time
 
-# breath-first search algorithm
-def bfs(root: node, goalNode: node, map: list, start_time: time):
+# iterative deepening search algorithm
+def ids(root: node, goalNode: node, map: list, start_time: time):
     if root is None:
         return
+    
+    limit = 1 # start at limit = 1
+    path = None
+    elapsedTime = time.time() - start_time
+    # while we have not found a path to the goal node and the elapsed time is less than 3 minutes
+    while path is None and elapsedTime < 180:
+        visited, path, totalCost, depth, numExpandedNodes = _idsLimitedSearch(root, goalNode, map, limit)
+        elapsedTime = time.time() - start_time
+        if path is not None: # if we found a path, return values
+            return visited, path, totalCost, depth, numExpandedNodes, elapsedTime*1000
+        limit+=1 # else increase the search depth limit
+        
+    if elapsedTime >= 180: # search timed out without finding a path
+        print("IDS search timed out after 3 minutes.")
+        return -1, None, -1, -1, numExpandedNodes, elapsedTime*1000
+
+    return -1, None, -1, -1, numExpandedNodes, elapsedTime*1000
+    
+def _idsLimitedSearch(root: node, goalNode: node, map: list, limit: int):
     queue = [root]
     visited = [root.coordinates]
     numExpandedNodes = 0
+    curDepth = 0
+    
+    while len(queue) > 0 and curDepth <= limit:
+        cur_node = queue.pop() # LIFO queue
 
-    while len(queue) > 0:
-        # Check the elapsed time
-        elapsedTime = time.time() - start_time
-        if elapsedTime > 180:
-            print("BFS search timed out after 3 minutes.")
-            return -1, None, -1, -1, numExpandedNodes
-            
-        cur_node = queue.pop(0) # FIFO queue
-        
         # check if we have reached the goal node
         if cur_node.coordinates == goalNode.coordinates:
             # if we have, first get path and sum total cost
             path, totalCost = getPathAndCost(cur_node, root)
             depth = len(path) - 1
             return visited, path, totalCost, depth, numExpandedNodes
-        
+
         # generate successor nodes for the current node we are in
         cur_node.generateSuccessorNodes(map)
 
@@ -34,9 +48,8 @@ def bfs(root: node, goalNode: node, map: list, start_time: time):
         # (2) the node has not been visited before, and
         # (3) the node's cost is not 0 (not a barrier node)
         # we do this check for all 4 candidate successor nodes (left, right, up, down)
-        
         if cur_node.left is not None:
-            numExpandedNodes+=1
+            numExpandedNodes += 1
             if cur_node.left.coordinates not in visited and cur_node.left.cost != 0:
                 visited.append(cur_node.left.coordinates)
                 queue.append(cur_node.left)
@@ -46,7 +59,7 @@ def bfs(root: node, goalNode: node, map: list, start_time: time):
             if cur_node.right.coordinates not in visited and cur_node.right.cost != 0:
                 visited.append(cur_node.right.coordinates)
                 queue.append(cur_node.right)
-            
+
         if cur_node.up is not None:
             numExpandedNodes += 1
             if cur_node.up.coordinates not in visited and cur_node.up.cost != 0:
@@ -58,11 +71,12 @@ def bfs(root: node, goalNode: node, map: list, start_time: time):
             if cur_node.down.coordinates not in visited and cur_node.down.cost != 0:
                 visited.append(cur_node.down.coordinates)
                 queue.append(cur_node.down)
-    
-    # if while loop exits, means a path was not found            
-    print("Path to goal not found")
+                
+        curDepth += 1
+            
+    # if while loop exits, means a path was not found
     return visited, None, -1, -1, numExpandedNodes
-        
+
 # helper method which finds the path from the goal node to the start node
 # and calculates the total cost
 def getPathAndCost(goalNode, startNode):
