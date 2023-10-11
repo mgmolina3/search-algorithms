@@ -25,7 +25,7 @@ def astar_search(root: node, goalNode: node, map: list, start_time, heuristic):
         # Check the elapsed time
         elapsedTime = time.time() - start_time
         if elapsedTime > 180:
-            print("BFS search timed out after 3 minutes.")
+            print("A-Star search timed out after 3 minutes.")
             return -1, numExpandedNodes, maxNodes, None
         
         # keep track of maximum nodes held in queue
