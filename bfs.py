@@ -1,6 +1,6 @@
 from treeNode import node
 import time
-from search import getPathAndCost
+from pathAndCost import getPathAndCost
 
 # breadth-first search algorithm
 def bfs(root: node, goalNode: node, map: list, start_time: time):

@@ -4,6 +4,7 @@ from astarsearch import astar_search
 from ids import ids
 import time
 import sys
+import numpy as np
 
 # general search method, entry point for taking in a search algorithm, the map,
 # the start node, and the goal node
@@ -19,7 +20,7 @@ def search(map: list, algorithm: str, startNode: node, goalNode: node):
         print("Total time elapsed: ", endTime*1000, "milliseconds")
     elif algorithm.lower() == "a-star":
         start_time = time.time()
-        cost, numExpandedNodes, maxNodes, path = astar_search(startNode, goalNode, map, start_time)
+        cost, numExpandedNodes, maxNodes, path = astar_search(startNode, goalNode, map, start_time, manhattan)
         endTime = time.time() - start_time
         print("Total Cost: ", cost)
         print("Number of Expanded Nodes: ", numExpandedNodes)
@@ -60,22 +61,14 @@ def readFromFile(fileName: str) -> (list, list, node, node):
         
     return (map, dimensions, startNode, goalNode)
 
-# helper method which finds the path from the goal node to the start node
-# and calculates the total cost
-def getPathAndCost(goalNode, startNode):
-    pathRev = []
-    cur_node = goalNode
-    cost = 0
-    # adds them in reverse order, from goal node to start node
-    while cur_node.coordinates != startNode.coordinates:
-        pathRev.append(cur_node.coordinates)
-        cost += cur_node.cost
-        cur_node = cur_node.parent
-    pathRev.append(startNode.coordinates)
-    cost += startNode.cost
-    # reverse the path
-    path = pathRev[::-1]
-    return path, cost
+# Manhattan Distance of two nodes
+def manhattan(node1, node2):
+    # compare coordinates of node1 to node2
+    v1 = np.array(node1.coordinates)  # [x, y]
+    v2 = np.array(node2.coordinates)  # [x, y]
+
+    m = sum(abs(v1-v2))
+    return m
 
 # starting point       
 def main():
