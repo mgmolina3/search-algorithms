@@ -1,58 +1,40 @@
 from treeNode import node
+from search import getPathAndCost
 import time
 import numpy as np
 
-# For A* search you should use the Manhattan distance as your heuristic,
-# but implement the algorithm in a general way so that a new heuristic
-# could be used.
+# Manhattan Distance of two nodes
+def manhattan(node1, node2):
+    # compare coordinates of node1 to node2
+    v1 = np.array(node1.coordinates)  # [x, y]
+    v2 = np.array(node2.coordinates)  # [x, y]
 
-# Write A * search
-# * write a simple comparator class, or implement a compareTo method in
-# your Node class to allow you to use a PriorityQueue (builtin java class)
-# to maintain a sorted list of nodes
+    m = sum(abs(v1-v2))
+    return m
 
-# function:
-# f(n) = g(n) + h(n)
-# g(n) = cost so far
-# h(n) = manhattan distance
-
-def myFunc(n):
-    return n.evalFunc
-    
-def astar_search(root: node, goalNode: node, map: list): 
+# A star search function, with default heuristic of manhattan distance
+def astar_search(root: node, goalNode: node, map: list, heuristic=manhattan): 
     if not root: 
-        return None #tree is empty 
+        return None # tree is empty 
     
-    priorityQueue = [] #prority queue to manage the nodes to explore 
+    priorityQueue = [] # prority queue to manage the nodes to explore 
     root.generateSuccessorNodes(map)
-    visited = [root.coordinates]
-    pathFound = False
-    goalNodeFound = None
     
-    left = root.left
-    right = root.right
-    up = root.up
-    down = root.down
-    if left and left.cost != 0:
-        left.computeEvalFunc(manhattan(root, left))
-        priorityQueue.append(left)
-        visited.append(left.coordinates)
-    if right and right.cost != 0:
-        right.computeEvalFunc(manhattan(root, right))
-        priorityQueue.append(right)
-        visited.append(right.coordinates)
-    if up and up.cost != 0:
-        up.computeEvalFunc(manhattan(root, up))
-        priorityQueue.append(up)
-        visited.append(up.coordinates)
-    if down and down.cost != 0:
-        down.computeEvalFunc(manhattan(root, down))
-        priorityQueue.append(down)
-        visited.append(down.coordinates)
+    visited = [root.coordinates] # keep track of visited nodes
+    pathFound = False # used to keep track of if we have found a potential path already
+    goalNodeFound = None # used to keep track if we have found a potential goal node
+    numExpandedNodes = 0
+    maxNodes = 1
+    
+    numExpandedNodes, priorityQueue, visited = exploreNodes(root, numExpandedNodes, priorityQueue, visited, heuristic)
     priorityQueue.sort(key=myFunc)
     
     while priorityQueue:
-        current_node = priorityQueue.pop(0)
+        # keep track of maximum nodes held in queue
+        if (len(priorityQueue) > maxNodes):
+            maxNodes = len(priorityQueue)
+            
+        current_node = priorityQueue.pop(0) # pop node with least cost
 
         if current_node.coordinates == goalNode.coordinates:
             # found one possible path, must check this is the least
@@ -61,67 +43,63 @@ def astar_search(root: node, goalNode: node, map: list):
             pathFound = True
             path, _ = getPathAndCost(goalNodeFound, root)
             cost = goalNodeFound.evalFunc
-           
+            
+            # found the least costly node already, return this one
             if priorityQueue[0].evalFunc < current_node.evalFunc:
                 path, _ = getPathAndCost(current_node, root)
                 cost = current_node.evalFunc
-                return path, cost # whatever else we need
+                return cost, numExpandedNodes, maxNodes, path
 
         # generate successor nodes for the current node we are in
         current_node.generateSuccessorNodes(map)
         
-        left = current_node.left
-        right = current_node.right
-        up = current_node.up
-        down = current_node.down
-        if left and left.cost != 0 and left.coordinates not in visited:
-            left.computeEvalFunc(manhattan(root, left))
-            priorityQueue.append(left)
-            visited.append(left.coordinates)
-        if right and right.cost != 0 and right.coordinates not in visited:
-            right.computeEvalFunc(manhattan(root, right))
-            priorityQueue.append(right)
-            visited.append(right.coordinates)
-        if up and up.cost != 0 and up.coordinates not in visited:
-            up.computeEvalFunc(manhattan(root, up))
-            priorityQueue.append(up)
-            visited.append(up.coordinates)
-        if down and down.cost != 0 and down.coordinates not in visited:
-            down.computeEvalFunc(manhattan(root, down))
-            priorityQueue.append(down)
-            visited.append(down.coordinates)
+        numExpandedNodes, priorityQueue, visited = exploreNodes(current_node, numExpandedNodes, priorityQueue, visited, heuristic)
         priorityQueue.sort(key=myFunc)  
 
     if (pathFound):
         path, _ = getPathAndCost(goalNodeFound, root)
         cost = goalNodeFound.evalFunc
-        return path, cost
-    return None, None # goalNode node not found 
-        
-# Manhattan Distance of two nodes
-def manhattan(node1, node2):
-    # compare coordinates of node1 to node2
-    v1 = np.array(node1.coordinates) # [x, y]
-    v2 = np.array(node2.coordinates) # [x, y]
+        return cost, numExpandedNodes, maxNodes, path
     
-    m = sum(abs(v1-v2))
-    return m
+    return -1, numExpandedNodes, maxNodes, None # goalNode node not found 
 
-# helper method which finds the path from the goal node to the start node
-# and calculates the total cost
+# helper function to explore the successor nodes and add to priority queue
+def exploreNodes(node, numExpandedNodes, priorityQueue, visited, heuristic):
+    # for each successor node, we check if we can visit it. We can visit
+    # a successor node if all following conditions are met:
+    # (1) it is not None
+    # (2) the node has not been visited before, and
+    # (3) the node's cost is not 0 (not a barrier node)
+    # we do this check for all 4 candidate successor nodes (left, right, up, down)
+    if node.left is not None:
+        numExpandedNodes += 1
+        if node.left and node.left.cost != 0:
+            node.left.computeEvalFunc(heuristic(node, node.left))
+            priorityQueue.append(node.left)
+            visited.append(node.left.coordinates)
+    
+    if node.right is not None:
+        numExpandedNodes += 1
+        if node.right and node.right.cost != 0:
+            node.right.computeEvalFunc(heuristic(node, node.right))
+            priorityQueue.append(node.right)
+            visited.append(node.right.coordinates)
+    
+    if node.up is not None:
+        numExpandedNodes += 1
+        if node.up and node.up.cost != 0:
+            node.up.computeEvalFunc(heuristic(node, node.up))
+            priorityQueue.append(node.up)
+            visited.append(node.up.coordinates)
+    
+    if node.down is not None:
+        numExpandedNodes += 1
+        if node.down and node.down.cost != 0:
+            node.down.computeEvalFunc(heuristic(node, node.down))
+            priorityQueue.append(node.down)
+            visited.append(node.down.coordinates)
+    
+    return numExpandedNodes, priorityQueue, visited
 
-
-def getPathAndCost(goalNode, startNode):
-    pathRev = []
-    cur_node = goalNode
-    cost = 0
-    # adds them in reverse order, from goal node to start node
-    while cur_node.coordinates != startNode.coordinates:
-        pathRev.append(cur_node.coordinates)
-        cost += cur_node.cost
-        cur_node = cur_node.parent
-    pathRev.append(startNode.coordinates)
-    cost += startNode.cost
-    # reverse the path
-    path = pathRev[::-1]
-    return path, cost
+def myFunc(n):
+    return n.evalFunc

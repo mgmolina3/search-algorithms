@@ -10,27 +10,29 @@ import sys
 def search(map: list, algorithm: str, startNode: node, goalNode: node):
     if algorithm.lower() == "bfs":
         start_time = time.time()
-        visited, path, totalCost, depth, numExpandedNodes = bfs(startNode, goalNode, map, start_time)
+        cost, numExpandedNodes, maxNodes, path = bfs(startNode, goalNode, map, start_time)
         endTime = time.time() - start_time
-        print("Visited Nodes: ", visited)
-        print("Path to Goal: ", path)
-        print("Total Cost: ", totalCost)
-        print("Depth: ", depth)
-        print("Number of Expanded Nodes: ", numExpandedNodes)
-        print("Total time elapsed: ", endTime, "seconds")
-    elif algorithm.lower() == "a-star":
-        path, cost = astar_search(startNode, goalNode, map)
-        print("Path to Goal: ", path)
         print("Total Cost: ", cost)
+        print("Number of Expanded Nodes: ", numExpandedNodes)
+        print("Max Number of Nodes Held in Memory: ", maxNodes)
+        print("Path to Goal: ", path)
+        print("Total time elapsed: ", endTime*1000, "milliseconds")
+    elif algorithm.lower() == "a-star":
+        start_time = time.time()
+        cost, numExpandedNodes, maxNodes, path = astar_search(startNode, goalNode, map, start_time)
+        endTime = time.time() - start_time
+        print("Total Cost: ", cost)
+        print("Number of Expanded Nodes: ", numExpandedNodes)
+        print("Max Number of Nodes Held in Memory: ", maxNodes)
+        print("Path to Goal: ", path)
         print("Total time elapsed: ", endTime*1000, "miliseconds")
     elif algorithm.lower() == "ids":
         start_time = time.time()
-        visited, path, totalCost, depth, numExpandedNodes, elapsedTime = ids(startNode, goalNode, map, start_time)
-        print("Visited Nodes: ", visited)
-        print("Path to Goal: ", path)
-        print("Total Cost: ", totalCost)
-        print("Depth: ", depth)
+        cost, numExpandedNodes, maxNodes, path, elapsedTime = ids(startNode, goalNode, map, start_time)
+        print("Total Cost: ", cost)
         print("Number of Expanded Nodes: ", numExpandedNodes)
+        print("Max Number of Nodes Held in Memory: ", maxNodes)
+        print("Path to Goal: ", path)
         print("Total time elapsed: ", elapsedTime, "miliseconds")
 
 # Read file and store map into 2D array 
@@ -58,6 +60,23 @@ def readFromFile(fileName: str) -> (list, list, node, node):
         
     return (map, dimensions, startNode, goalNode)
 
+# helper method which finds the path from the goal node to the start node
+# and calculates the total cost
+def getPathAndCost(goalNode, startNode):
+    pathRev = []
+    cur_node = goalNode
+    cost = 0
+    # adds them in reverse order, from goal node to start node
+    while cur_node.coordinates != startNode.coordinates:
+        pathRev.append(cur_node.coordinates)
+        cost += cur_node.cost
+        cur_node = cur_node.parent
+    pathRev.append(startNode.coordinates)
+    cost += startNode.cost
+    # reverse the path
+    path = pathRev[::-1]
+    return path, cost
+
 # starting point       
 def main():
     fileName = sys.argv[1]
@@ -67,9 +86,5 @@ def main():
     # call the search method by passing in the map
     search(map, searchAlgorithm, startNode, goalNode)
     
-
-def myFunc(n):
-    return n.evalFunc
-
 if __name__ == "__main__":
     main()
