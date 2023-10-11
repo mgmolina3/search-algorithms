@@ -26,6 +26,8 @@ def astar_search(root: node, goalNode: node, map: list):
     priorityQueue = [] #prority queue to manage the nodes to explore 
     root.generateSuccessorNodes(map)
     visited = [root.coordinates]
+    pathFound = False
+    goalNodeFound = None
     
     left = root.left
     right = root.right
@@ -55,14 +57,12 @@ def astar_search(root: node, goalNode: node, map: list):
         if current_node.coordinates == goalNode.coordinates:
             # found one possible path, must check this is the least
             # costly path
-            print("Found one goal node!")
-            path, _ = getPathAndCost(current_node, root)
-            cost = current_node.evalFunc
-            print("Path of current found goal node: ", path)
-            print("Cost of current found goal node: ", cost)
-            if priorityQueue[0].evalFunc > current_node.evalFunc:
-                # stop looping
-                print("Found goal node!")
+            goalNodeFound = current_node
+            pathFound = True
+            path, _ = getPathAndCost(goalNodeFound, root)
+            cost = goalNodeFound.evalFunc
+           
+            if priorityQueue[0].evalFunc < current_node.evalFunc:
                 path, _ = getPathAndCost(current_node, root)
                 cost = current_node.evalFunc
                 return path, cost # whatever else we need
@@ -92,7 +92,11 @@ def astar_search(root: node, goalNode: node, map: list):
             visited.append(down.coordinates)
         priorityQueue.sort(key=myFunc)  
 
-    return None, None ## goalNode node not found 
+    if (pathFound):
+        path, _ = getPathAndCost(goalNodeFound, root)
+        cost = goalNodeFound.evalFunc
+        return path, cost
+    return None, None # goalNode node not found 
         
 # Manhattan Distance of two nodes
 def manhattan(node1, node2):

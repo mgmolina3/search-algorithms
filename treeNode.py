@@ -15,7 +15,7 @@ class node:
         self.parent = parent
         
     def __str__(self):
-        return "Cost: " + str(self.cost) + "\nCoordinates: " + str(self.coordinates) + "\nParent: " + str(self.parent)
+        return "Cost: " + str(self.cost) + "\nCoordinates: " + str(self.coordinates) + "\nEval: " + str(self.evalFunc)
     
     def setCoordinates(self, coordinates: list):
         self.coordinates = coordinates
