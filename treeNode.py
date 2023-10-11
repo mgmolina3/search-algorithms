@@ -7,6 +7,7 @@ class node:
     right = None
     up = None
     down = None
+    evalFunc = 0
     
     def __init__(self, coordinates: list[int] = None, cost: int = 0, parent = None) -> None:
         self.coordinates = coordinates
@@ -14,7 +15,7 @@ class node:
         self.parent = parent
         
     def __str__(self):
-        return "Cost: " + str(self.cost) + "\nCoordinates: " + str(self.coordinates) + "\nParent: " + str(self.parent)
+        return "Cost: " + str(self.cost) + "\nCoordinates: " + str(self.coordinates) + "\nEval: " + str(self.evalFunc)
     
     def setCoordinates(self, coordinates: list):
         self.coordinates = coordinates
@@ -33,6 +34,12 @@ class node:
         
     def setDown(self, down):
         self.down = down
+        
+    def computeEvalFunc(self, heuristic):
+        self.evalFunc = self.cost + heuristic
+    
+    def compareTo(self, node): # returns true if self is priority
+        return self.evalFunc < node.evalFunc
     
     def generateSuccessorNodes(self, map: list):
         # start at self coordinates
@@ -55,4 +62,3 @@ class node:
         if x != len(map)-1:
             # generate down successor node
             self.down = node([x+1, y], map[x+1][y], self)
-    

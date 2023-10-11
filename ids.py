@@ -1,5 +1,6 @@
 from treeNode import node
 import time
+from pathAndCost import getPathAndCost
 
 # iterative deepening search algorithm
 def ids(root: node, goalNode: node, map: list, start_time: time):
@@ -11,33 +12,38 @@ def ids(root: node, goalNode: node, map: list, start_time: time):
     elapsedTime = time.time() - start_time
     # while we have not found a path to the goal node and the elapsed time is less than 3 minutes
     while path is None and elapsedTime < 180:
-        visited, path, totalCost, depth, numExpandedNodes = _idsLimitedSearch(root, goalNode, map, limit)
+        cost, numExpandedNodes, maxNodes, path = _idsLimitedSearch(root, goalNode, map, limit)
         elapsedTime = time.time() - start_time
         if path is not None: # if we found a path, return values
-            return visited, path, totalCost, depth, numExpandedNodes, elapsedTime*1000
+            return cost, numExpandedNodes, maxNodes, path, elapsedTime*1000
         limit+=1 # else increase the search depth limit
         
     if elapsedTime >= 180: # search timed out without finding a path
         print("IDS search timed out after 3 minutes.")
-        return -1, None, -1, -1, numExpandedNodes, elapsedTime*1000
+        return -1, numExpandedNodes, maxNodes, None, elapsedTime*1000
 
-    return -1, None, -1, -1, numExpandedNodes, elapsedTime*1000
+    return -1, numExpandedNodes, maxNodes, None, elapsedTime*1000
     
+
 def _idsLimitedSearch(root: node, goalNode: node, map: list, limit: int):
     queue = [root]
     visited = [root.coordinates]
     numExpandedNodes = 0
+    maxNodes = 1
     curDepth = 0
     
     while len(queue) > 0 and curDepth <= limit:
+        # keep track of maximum nodes held in queue
+        if (len(queue) > maxNodes):
+            maxNodes = len(queue)
+            
         cur_node = queue.pop() # LIFO queue
 
         # check if we have reached the goal node
         if cur_node.coordinates == goalNode.coordinates:
             # if we have, first get path and sum total cost
-            path, totalCost = getPathAndCost(cur_node, root)
-            depth = len(path) - 1
-            return visited, path, totalCost, depth, numExpandedNodes
+            path, cost = getPathAndCost(cur_node, root)
+            return cost, numExpandedNodes, maxNodes, path
 
         # generate successor nodes for the current node we are in
         cur_node.generateSuccessorNodes(map)
@@ -75,21 +81,4 @@ def _idsLimitedSearch(root: node, goalNode: node, map: list, limit: int):
         curDepth += 1
             
     # if while loop exits, means a path was not found
-    return visited, None, -1, -1, numExpandedNodes
-
-# helper method which finds the path from the goal node to the start node
-# and calculates the total cost
-def getPathAndCost(goalNode, startNode):
-    pathRev = []
-    cur_node = goalNode
-    cost = 0
-    # adds them in reverse order, from goal node to start node
-    while cur_node.coordinates != startNode.coordinates:
-        pathRev.append(cur_node.coordinates)
-        cost += cur_node.cost
-        cur_node = cur_node.parent
-    pathRev.append(startNode.coordinates)
-    cost += startNode.cost
-    # reverse the path
-    path = pathRev[::-1]
-    return path, cost
+    return -1, numExpandedNodes, maxNodes, None
