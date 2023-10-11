@@ -1,6 +1,7 @@
 from treeNode import node
 from bfs import bfs 
 from astarsearch import astar_search
+from ids import ids
 import time
 import sys
 
@@ -21,7 +22,17 @@ def search(map: list, algorithm: str, startNode: node, goalNode: node):
         path, cost = astar_search(startNode, goalNode, map)
         print("Path to Goal: ", path)
         print("Total Cost: ", cost)
-    
+        print("Total time elapsed: ", endTime*1000, "miliseconds")
+    elif algorithm.lower() == "ids":
+        start_time = time.time()
+        visited, path, totalCost, depth, numExpandedNodes, elapsedTime = ids(startNode, goalNode, map, start_time)
+        print("Visited Nodes: ", visited)
+        print("Path to Goal: ", path)
+        print("Total Cost: ", totalCost)
+        print("Depth: ", depth)
+        print("Number of Expanded Nodes: ", numExpandedNodes)
+        print("Total time elapsed: ", elapsedTime, "miliseconds")
+
 # Read file and store map into 2D array 
 def readFromFile(fileName: str) -> (list, list, node, node):
     map = []
